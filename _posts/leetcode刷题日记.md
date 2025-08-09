@@ -1,0 +1,613 @@
+---
+title: leetcode刷题日记
+copyright: true
+mathjax: true
+date: 2025-03-01 16:20:03
+categories:
+tags: 刷题
+---
+
+# 面试精选100题
+
+## 数组、字符串
+
+### 1.数组列表中的最大距离（中等）
+
+给定 `m` 个数组，每个数组都已经按照升序排好序了。
+
+现在你需要从两个不同的数组中选择两个整数（每个数组选一个）并且计算它们的距离。两个整数 `a` 和 `b` 之间的距离定义为它们差的绝对值 `|a-b|` 。
+
+返回最大距离。
+
+**示例 1：**
+
+```
+输入：[[1,2,3],[4,5],[1,2,3]]
+输出：4
+解释：
+一种得到答案 4 的方法是从第一个数组或者第三个数组中选择 1，同时从第二个数组中选择 5 。
+```
+
+**示例 2：**
+
+```
+输入：arrays = [[1],[1]]
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `m == arrays.length`
+- `2 <= m <= 105`
+- `1 <= arrays[i].length <= 500`
+- `-104 <= arrays[i][j] <= 104`
+- `arrays[i]` 以 **升序** 排序。
+- 所有数组中最多有 `105` 个整数。
+
+ 解答：
+
+```python
+class Solution:
+    def maxDistance(self, arrays: List[List[int]]) -> int:
+        res = 0
+        n = len(arrays[0])
+        min_val = arrays[0][0]
+        max_val = arrays[0][-1]
+        
+        for i in range(1, len(arrays)):
+            n = len(arrays[i])
+            res = max(res, max(abs(arrays[i][n - 1] - min_val), 
+                            abs(max_val - arrays[i][0])))
+            min_val = min(min_val, arrays[i][0])
+            max_val = max(max_val, arrays[i][-1])
+        
+        return res
+```
+
+### 2.摆动排序（中等）
+
+给你一个的整数数组 `nums`, 将该数组重新排序后使 `nums[0] <= nums[1] >= nums[2] <= nums[3]...` 
+
+输入数组总是有一个有效的答案。
+
+ 
+
+**示例 1:**
+
+```
+输入：nums = [3,5,2,1,6,4]
+输出：[3,5,1,6,2,4]
+解释：[1,6,2,5,3,4]也是有效的答案
+```
+
+**示例 2:**
+
+```
+输入：nums = [6,6,5,6,3,8]
+输出：[6,6,5,6,3,8]
+```
+
+ 
+
+**提示：**
+
+
+
+- `1 <= nums.length <= 5 * 104`
+- `0 <= nums[i] <= 104`
+- 输入的 `nums` 保证至少有一个答案。
+
+ 
+
+**进阶：**你能在 `O(n)` 时间复杂度下解决这个问题吗？
+
+解答：
+
+```python
+class Solution(object):
+    def wiggleSort(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: None Do not return anything, modify nums in-place instead.
+        """
+        nums.sort()
+        temp = 0
+        for i in range(1, len(nums)-1,2):
+            # nums[i+1], nums[i] = nums[i], nums[i+1]
+                temp = nums[i]
+                nums[i] = nums[i+1]
+                nums[i+1] = temp
+        return nums 
+# 时间复杂度O(n)
+	def wiggleSort(self, nums):
+        for i in range(len(nums)-1):
+            if ((i%2 == 0 and nums[i] > nums[i+1]) or (i%2 == 1 and nums[i] < nums[i+1])):
+                nums[i], nums[i+1] = nums[i+1], nums[i]
+```
+
+### 3.反转数字（简单）
+
+给定一个数字 `N`，当它满足以下条件的时候返回 `true`：
+
+原数字旋转 180° 以后可以得到新的数字。
+
+如 0, 1, 6, 8, 9 旋转 180° 以后，得到了新的数字 0, 1, 9, 8, 6 。
+
+2, 3, 4, 5, 7 旋转 180° 后，得到的**不是**数字。
+
+易混淆数 (confusing number) 在旋转180°以后，可以得到和原来**不同**的数，且新数字的每一位都是有效的。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2019/03/23/1268_1.png)
+
+```
+输入：6
+输出：true
+解释： 
+把 6 旋转 180° 以后得到 9，9 是有效数字且 9!=6 。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2019/03/23/1268_2.png)
+
+```
+输入：89
+输出：true
+解释: 
+把 89 旋转 180° 以后得到 68，68 是有效数字且 89!=68 。
+```
+
+**示例 3：**
+
+![img](https://assets.leetcode.com/uploads/2019/03/26/1268_3.png)
+
+```
+输入：11
+输出：false
+解释：
+把 11 旋转 180° 以后得到 11，11 是有效数字但是值保持不变，所以 11 不是易混淆数字。 
+```
+
+**示例 4：**
+
+![img](https://assets.leetcode.com/uploads/2019/03/23/1268_4.png)
+
+```
+输入：25
+输出：false
+解释：
+把 25 旋转 180° 以后得到的不是数字。
+```
+
+ 
+
+**提示：**
+
+1. `0 <= N <= 10^9`
+2. 可以忽略掉旋转后得到的前导零，例如，如果我们旋转后得到 `0008` 那么该数字就是 `8` 。
+
+题解
+
+```python
+class Solution(object):
+    def confusingNumber(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        dic = {'0':'0','1':'1','8':'8','6':'9','9':'6'}
+        s = str(n)
+        rev_s = ""
+        for i in s:
+            if i not in dic:
+                return False
+            rev_s = dic[i] + rev_s
+        return rev_s!=s
+```
+
+### 4.字符串左右移
+
+给定一个包含小写英文字母的字符串 `s` 以及一个矩阵 `shift`，其中 `shift[i] = [direction, amount]`：
+
+- `direction` 可以为 `0` （表示左移）或 `1` （表示右移）。
+- `amount` 表示 `s` 左右移的位数。
+- 左移 1 位表示移除 `s` 的第一个字符，并将该字符插入到 `s` 的结尾。
+- 类似地，右移 1 位表示移除 `s` 的最后一个字符，并将该字符插入到 `s` 的开头。
+
+对这个字符串进行所有操作后，返回最终结果。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "abc", shift = [[0,1],[1,2]]
+输出："cab"
+解释：
+[0,1] 表示左移 1 位。 "abc" -> "bca"
+[1,2] 表示右移 2 位。 "bca" -> "cab"
+```
+
+**示例 2：**
+
+```
+输入：s = "abcdefg", shift = [[1,1],[1,1],[0,2],[1,3]]
+输出："efgabcd"
+解释： 
+[1,1] 表示右移 1 位。 "abcdefg" -> "gabcdef"
+[1,1] 表示右移 1 位。 "gabcdef" -> "fgabcde"
+[0,2] 表示左移 2 位。 "fgabcde" -> "abcdefg"
+[1,3] 表示右移 3 位。 "abcdefg" -> "efgabcd"
+```
+
+ 解答：
+
+```python
+class Solution(object):
+    def stringShift(self, s, shift):
+        """
+        :type s: str
+        :type shift: List[List[int]]
+        :rtype: str
+        """
+        left_sum = 0
+        right_sum = 0
+        for direction, amount in shift:
+            if direction == 0:
+                left_sum += amount
+            else:
+                right_sum += amount
+        total = (right_sum-left_sum)%len(s)
+        if total < 0:
+            total += len(s)
+        # 切片操作
+        return s[-total:] + s[:-total]
+```
+
+这行代码根据计算得到的 `total` 值对字符串 `s` 进行切片和拼接操作。
+
+- `s[-total:]`：获取字符串 `s` 从倒数第 `total` 个字符开始到末尾的子串。
+- `s[:-total]`：获取字符串 `s` 从开头到倒数第 `total` 个字符之前的子串。
+- `s[-total:] + s[:-total]`：将上述两个子串拼接起来，得到最终移动后的字符串，并返回。
+
+### 5.相隔为1的编辑距离（中等）
+
+给定两个字符串 `s` 和 `t` ，如果它们的编辑距离为 `1` ，则返回 `true` ，否则返回 `false` 。
+
+字符串 `s` 和字符串 `t` 之间满足编辑距离等于 1 有三种可能的情形：
+
+- 往 `s` 中插入 **恰好一个** 字符得到 `t`
+- 从 `s` 中删除 **恰好一个** 字符得到 `t`
+- 在 `s` 中用 **一个不同的字符** 替换 **恰好一个** 字符得到 `t`
+
+ 
+
+**示例 1：**
+
+```
+输入: s = "ab", t = "acb"
+输出: true
+解释: 可以将 'c' 插入字符串 s 来得到 t。
+```
+
+**示例 2:**
+
+```
+输入: s = "cab", t = "ad"
+输出: false
+解释: 无法通过 1 步操作使 s 变为 t。
+```
+
+ 
+
+**提示:**
+
+- `0 <= s.length, t.length <= 104`
+- `s` 和 `t` 由小写字母，大写字母和数字组成
+
+解答：
+
+```python
+class Solution(object):
+    def isOneEditDistance(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        len_s,len_t = len(s),len(t)
+        # 保证s长度要小于t   
+        if len_s > len_t:
+            return isOneEditDistance(t,s)
+        # 长度超过1的字符距离一定不满足题意
+        if len_t - len_s > 1:
+            return False
+        # 找s和t的前len(s)项是否相同
+        for i in range(len_s):
+            # 出现一个字符不同
+            if s[i] != t[i]:
+                # 若长度相同则后面需要完全一样
+                if len_s == len_t:
+                    return s[i + 1:] == t[i + 1:]
+                # 长度差为 1 时，s 从当前位置开始和 t 从下一个位置开始需相同
+                else:
+                    return s[i:] == t[i + 1:]
+        # 前len(s)完全相同 
+        return len_s + 1 == len_t
+```
+
+### 6.反转字符串中的单词Ⅱ（中等）
+
+给你一个字符数组 `s` ，反转其中 **单词** 的顺序。
+
+**单词** 的定义为：单词是一个由非空格字符组成的序列。`s` 中的单词将会由单个空格分隔。
+
+必须设计并实现 **原地** 解法来解决此问题，即不分配额外的空间。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = ["t","h","e"," ","s","k","y"," ","i","s"," ","b","l","u","e"]
+输出：["b","l","u","e"," ","i","s"," ","s","k","y"," ","t","h","e"]
+```
+
+**示例 2：**
+
+```
+输入：s = ["a"]
+输出：["a"]
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 105`
+- `s[i]` 可以是一个英文字母（大写或小写）、数字、或是空格 `' '` 。
+- `s` 中至少存在一个单词
+- `s` 不含前导或尾随空格
+- 题目数据保证：`s` 中的每个单词都由单个空格分隔
+
+解答：
+
+```python
+class Solution(object):
+    def reverseWords(self, s):
+        """
+        :type s: List[str]
+        :rtype: None Do not return anything, modify s in-place instead.
+        """
+        n = len(s)
+        # 使用 Python 列表的 reverse() 方法将整个字符数组反转，这里reverse是创建了一个新的列表
+        s.reverse()
+        pre = 0
+        for i in range(n):
+            if s[i] ==' ':
+                # 不可以用s[pre:i].reverse()，因为切片操作时这样会自动创建新的列表原始并没有修改
+                s[pre:i] = reversed(s[pre:i])
+                pre = i + 1
+        # 处理最后一个单词，因为最后一个单词后面没有空格
+        s[pre:] = reversed(s[pre:])
+        return s 
+```
+
+## 滑动窗口
+
+### 1.至多包含两个不同字符的最长子串（中等）
+
+给你一个字符串 `s` ，请你找出 **至多** 包含 **两个不同字符** 的最长子串，并返回该子串的长度。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "eceba"
+输出：3
+解释：满足题目要求的子串是 "ece" ，长度为 3 。
+```
+
+**示例 2：**
+
+```
+输入：s = "ccaabbb"
+输出：5
+解释：满足题目要求的子串是 "aabbb" ，长度为 5 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 105`
+- `s` 由英文字母组成
+
+解答：
+
+```python
+# 模板 (伪代码)
+class Solution:
+    def problemName(self, s: str) -> int:
+        # Step 1: 定义需要维护的变量们 (对于滑动窗口类题目，这些变量通常是最小长度，最大长度，或者哈希表)
+        x, y = ..., ...
+
+        # Step 2: 定义窗口的首尾端 (start, end)， 然后滑动窗口
+        start = 0
+        for end in range(len(s)):
+            # Step 3: 更新需要维护的变量, 有的变量需要一个if语句来维护 (比如最大最小长度)
+            x = new_x
+            if condition:
+                y = new_y
+
+            '''
+            ------------- 下面是两种情况，读者请根据题意二选1 -------------
+            '''
+            # Step 4 - 情况1
+            # 如果题目的窗口长度固定：用一个if语句判断一下当前窗口长度是否超过限定长度 
+            # 如果超过了，窗口左指针前移一个单位保证窗口长度固定, 在那之前, 先更新Step 1定义的(部分或所有)维护变量 
+            if 窗口长度大于限定值:
+                # 更新 (部分或所有) 维护变量 
+                # 窗口左指针前移一个单位保证窗口长度固定
+
+            # Step 4 - 情况2
+            # 如果题目的窗口长度可变: 这个时候一般涉及到窗口是否合法的问题
+            # 如果当前窗口不合法时, 用一个while去不断移动窗口左指针, 从而剔除非法元素直到窗口再次合法
+            # 在左指针移动之前更新Step 1定义的(部分或所有)维护变量 
+            while 不合法:
+                # 更新 (部分或所有) 维护变量 
+                # 不断移动窗口左指针直到窗口再次合法
+
+        # Step 5: 返回答案
+        return ...
+```
+
+```python
+def lengthOfLongestSubstringTwoDistinct(s):
+    # 1. 定义需要维护的变量
+    # 最大长度max_len，设计计算不重复元素格式需要哈希表hashmap
+    max_len, hashmap = 0, {}
+    # 2. 定义窗口首尾（start，end），滑动窗口
+    start = 0
+    for end in range(len(s)):
+        # 3. 更新维护变量（max_len,hashmap）
+        # 当前元素计数加一，一旦哈希表长度≤2，尝试更新最大长度
+        hashmap[s[end]] = hashmap.get(s[end],0) + 1
+        if len(hashmap) <=2:
+            max_len = max(max_len,end-start+1)
+        # 4. 因为窗口长度可变: 这个时候一般涉及到窗口是否合法的问题
+        # 这时要用一个while去不断移动窗口左指针, 从而剔除非法元素直到窗口再次合法
+        # 当哈希表长度>2时，移动左指针，直到哈希表长度≤2
+        while len(hashmap) > 2:
+            head = s[start]
+            hashmap[head] -= 1
+            if hashmap[head] == 0:
+                del hashmap[head]
+            start += 1
+    return max_len
+```
+
+```python
+# 同样道理
+# 无重复字符的最长子串
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        # Step 1: 定义需要维护的变量, 本题求最大长度，所以需要定义max_len, 该题又涉及去重，因此还需要一个哈希表
+        max_len, hashmap = 0, {}
+
+        # Step 2: 定义窗口的首尾端 (start, end)， 然后滑动窗口
+        start = 0
+        for end in range(len(s)):
+            # Step 3
+            # 更新需要维护的变量 (max_len, hashmap)
+            # i.e. 把窗口末端元素加入哈希表，使其频率加1，并且更新最大长度
+            hashmap[s[end]] = hashmap.get(s[end], 0) + 1
+            if len(hashmap) == end - start + 1:
+                max_len = max(max_len, end - start + 1)
+            
+            # Step 4: 
+            # 根据题意,  题目的窗口长度可变: 这个时候一般涉及到窗口是否合法的问题
+            # 这时要用一个while去不断移动窗口左指针, 从而剔除非法元素直到窗口再次合法
+            # 当窗口长度大于哈希表长度时候 (说明存在重复元素)，窗口不合法
+            # 所以需要不断移动窗口左指针直到窗口再次合法, 同时提前更新需要维护的变量 (hashmap)
+            while end - start + 1 > len(hashmap):
+                head = s[start]
+                hashmap[head] -= 1
+                if hashmap[head] == 0:
+                    del hashmap[head]
+                start += 1
+        # Step 5: 返回答案 (最大长度)
+        return max_len
+#长度最小的子数组
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        # Step 1: 定义需要维护的变量, 本题求最小长度，所以需要定义min_len, 本题又涉及求和，因此还需要一个sum变量
+        min_len, sum_ = math.inf, 0
+
+        # Step 2: 定义窗口的首尾端 (start, end)， 然后滑动窗口
+        start = 0
+        for end in range(len(nums)):
+            # Step 3: 更新需要维护的变量 (min_len, sum_)
+            sum_ += nums[end]
+            if sum_ >= target:
+                min_len = min(min_len, end - start + 1)
+
+            # Step 4
+            # 根据题意,  题目的窗口长度可变: 这个时候一般涉及到窗口是否合法的问题
+            # 这时要用一个while去不断移动窗口左指针, 从而剔除非法元素直到窗口再次合法
+            # 当sum_的值大于target时候，窗口不合法
+            # 所以需要不断移动窗口左指针直到窗口再次合法, 同时提前更新需要维护的变量 (min_len， sum_)
+            while sum_ >= target:
+                min_len = min(min_len, end - start + 1)
+                sum_ -= nums[start]
+                start += 1
+        # Step 5：返回答案 (最小长度)
+        if min_len == math.inf:
+            return 0
+        return min_len
+```
+
+### 2.最大连续1的个数（中等）
+
+给定一个二进制数组 `nums` ，如果最多可以翻转一个 `0` ，则返回数组中连续 `1` 的最大个数。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,0,1,1,0]
+输出：4
+解释：翻转第一个 0 可以得到最长的连续 1。
+     当翻转以后，最大连续 1 的个数为 4。
+```
+
+**示例 2:**
+
+```
+输入：nums = [1,0,1,1,0,1]
+输出：4
+```
+
+ 
+
+**提示:**
+
+- `1 <= nums.length <= 105`
+- `nums[i]` 不是 `0` 就是 `1`.
+
+ 
+
+**进阶：**如果输入的数字是作为 **无限流** 逐个输入如何处理？换句话说，内存不能存储下所有从流中输入的数字。您可以有效地解决吗？
+
+解决：
+
+```python
+class Solution(object):
+    def findMaxConsecutiveOnes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        start = 0
+        zero_count = 0
+        max_length = 0
+        # 1 1 1 1 0 1 1 0 
+        for end in range(len(nums)):
+            if nums[end] == 0:
+                zero_count += 1
+            while zero_count > 1:
+                if nums[start] == 0:
+                    zero_count -= 1
+                start += 1
+            max_length = max(max_length, end - start + 1)
+        return max_length
+```
+
